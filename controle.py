@@ -285,8 +285,4 @@ def equacao_diferencas(num_z, den_z, entrada='e', saida='u'):
     for i in range(1, len(a)):
         if abs(a[i]) > 1e-12:
             partes.append(f"{-a[i]:+.4f}·{saida}[k-{i}]")
-<<<<<<< HEAD
     return f"{saida}[k] = " + ' '.join(partes)
-=======
-    return f"{saida}[k] = " + ' '.join(partes)
->>>>>>> a74fefccb7184df471da8dca2ae3e4eb6112ab52
