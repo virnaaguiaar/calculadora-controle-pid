@@ -1,17 +1,11 @@
 """
 Calculadora de Controle: projeto de PD, PI, PID e a/(s+b) pelo lugar das raízes,
 com resposta ao degrau e discretização (Tustin, Euler, ZOH).
-<<<<<<< HEAD
 Cada etapa mostra a fórmula usada e a substituição numérica.
 
 Rodar localmente:  streamlit run app.py
 """
 import math
-=======
-
-Rodar localmente:  streamlit run app.py
-"""
->>>>>>> a74fefccb7184df471da8dca2ae3e4eb6112ab52
 import re
 
 import matplotlib.pyplot as plt
@@ -19,13 +13,8 @@ import numpy as np
 import pandas as pd
 import streamlit as st
 
-<<<<<<< HEAD
 from controle import (angulo_graus, discretizar, equacao_diferencas, ler_polinomio,
                       malha_fechada, metricas, poli_para_texto, polo_desejado, projetar,
-=======
-from controle import (discretizar, equacao_diferencas, ler_polinomio, malha_fechada,
-                      metricas, poli_para_texto, polo_desejado, projetar,
->>>>>>> a74fefccb7184df471da8dca2ae3e4eb6112ab52
                       resposta_degrau, tabela_angulos, zeta_de_mp, zeta_wn_minimo)
 
 st.set_page_config(page_title="Calculadora de Controle", page_icon="📐", layout="wide")
@@ -51,7 +40,6 @@ def fmt_c(z, casas=4):
     return f'{z.real:.{casas}f} {sinal} j{abs(z.imag):.{casas}f}'
 
 
-<<<<<<< HEAD
 def lx_c(z, casas=4):
     """Número (complexo ou real) em LaTeX."""
     z = complex(z)
@@ -85,8 +73,6 @@ def nota(texto):
         st.markdown(texto)
 
 
-=======
->>>>>>> a74fefccb7184df471da8dca2ae3e4eb6112ab52
 METODOS = {
     "Tustin (bilinear)": "tustin",
     "Euler de avanço (forward): s = (z−1)/T": "euler_avanco",
@@ -94,7 +80,6 @@ METODOS = {
     "ZOH (segurador de ordem zero)": "zoh",
 }
 
-<<<<<<< HEAD
 SUBSTITUICAO = {
     "tustin": (r"s = \frac{2}{T}\cdot\frac{z-1}{z+1}",
                "Tustin aproxima a integral pela regra do trapézio. Mapeia o semiplano "
@@ -110,15 +95,12 @@ SUBSTITUICAO = {
             "discretização exata da planta vista por um conversor D/A."),
 }
 
-=======
->>>>>>> a74fefccb7184df471da8dca2ae3e4eb6112ab52
 
 def bloco_discretizacao(num, den, chave, rotulo='C', mostrar_eq=True):
     c1, c2 = st.columns(2)
     T = c1.number_input("Período de amostragem T (s)", min_value=1e-6, value=1.0,
                         step=0.1, format="%.4f", key=f"T_{chave}")
     metodo_nome = c2.selectbox("Método", list(METODOS), key=f"m_{chave}")
-<<<<<<< HEAD
     metodo = METODOS[metodo_nome]
 
     subst, explicacao = SUBSTITUICAO[metodo]
@@ -141,24 +123,16 @@ def bloco_discretizacao(num, den, chave, rotulo='C', mostrar_eq=True):
 
     try:
         nz, dz = discretizar(num, den, T, metodo)
-=======
-    try:
-        nz, dz = discretizar(num, den, T, METODOS[metodo_nome])
->>>>>>> a74fefccb7184df471da8dca2ae3e4eb6112ab52
     except ValueError as e:
         st.error(str(e))
         return
     st.latex(rf'{rotulo}(z) = ' + latex_fracao(nz, dz, 'z'))
-<<<<<<< HEAD
 
-=======
->>>>>>> a74fefccb7184df471da8dca2ae3e4eb6112ab52
     polos_z = np.roots(dz.coeffs) if dz.order > 0 else []
     zeros_z = np.roots(nz.coeffs) if nz.order > 0 else []
     c1, c2 = st.columns(2)
     c1.markdown("**Polos em z:** " + (", ".join(fmt_c(p) for p in polos_z) or "—"))
     c2.markdown("**Zeros em z:** " + (", ".join(fmt_c(z) for z in zeros_z) or "—"))
-<<<<<<< HEAD
 
     if MOSTRAR and len(polos_z):
         polos_s = np.roots(np.poly1d(den).coeffs)
@@ -174,30 +148,21 @@ def bloco_discretizacao(num, den, chave, rotulo='C', mostrar_eq=True):
                       for p in polos_s]
             st.dataframe(pd.DataFrame(linhas), hide_index=True)
 
-=======
->>>>>>> a74fefccb7184df471da8dca2ae3e4eb6112ab52
     fora = [p for p in polos_z if abs(p) > 1 + 1e-9]
     if fora:
         st.warning("Há polos fora do círculo unitário (|z| > 1). "
                    "Com esse T e esse método, a versão discreta é instável.")
     if mostrar_eq:
         st.markdown("**Equação a diferenças:**")
-<<<<<<< HEAD
         nota("Divide-se numerador e denominador pela maior potência de z, obtendo potências de "
              "z⁻¹. Como z⁻ᵏ significa atraso de k amostras, U(z)·(a₀ + a₁z⁻¹ + …) = "
              "E(z)·(b₀ + b₁z⁻¹ + …) vira a equação abaixo, que o microcontrolador executa a cada T.")
-=======
->>>>>>> a74fefccb7184df471da8dca2ae3e4eb6112ab52
         st.code(equacao_diferencas(nz, dz), language=None)
 
 
 # ----------------------------------------------------------------------
 # barra lateral
 # ----------------------------------------------------------------------
-<<<<<<< HEAD
-=======
-st.sidebar.title("📐 Calculadora de Controle")
->>>>>>> a74fefccb7184df471da8dca2ae3e4eb6112ab52
 modo = st.sidebar.radio("O que você quer fazer?",
                         ["Projetar controlador", "Só discretizar uma função"])
 
@@ -231,11 +196,7 @@ if modo == "Só discretizar uma função":
 # ======================================================================
 st.title("Projeto pelo lugar das raízes")
 
-<<<<<<< HEAD
 # ---------- 1. planta ----------
-=======
-# ---------- planta ----------
->>>>>>> a74fefccb7184df471da8dca2ae3e4eb6112ab52
 st.header("1. Planta e realimentação")
 c1, c2, c3, c4 = st.columns(4)
 try:
@@ -251,15 +212,10 @@ c1, c2 = st.columns(2)
 c1.latex(r'G(s) = ' + latex_fracao(N_G, D_G))
 c2.latex(r'H(s) = ' + latex_fracao(N_H, D_H))
 N_GH, D_GH = N_G * N_H, D_G * D_H
-<<<<<<< HEAD
 nota("Multiplicando G e H obtém-se a função de malha aberta, que é a usada nos critérios:")
 formula(r'G(s)H(s) = ' + latex_fracao(N_GH, D_GH))
 
 # ---------- 2. controlador ----------
-=======
-
-# ---------- controlador ----------
->>>>>>> a74fefccb7184df471da8dca2ae3e4eb6112ab52
 st.header("2. Controlador")
 tipos = {
     "PD  →  Kp + Kd·s": "PD",
@@ -268,7 +224,6 @@ tipos = {
     "Polo puro  →  a/(s + b)": "POLO",
 }
 tipo = tipos[st.radio("Tipo", list(tipos), horizontal=True)]
-<<<<<<< HEAD
 if tipo == 'PD':
     formula(r"C(s) = K_p + K_d\,s = K_d\,(s - z_c), \qquad z_c = -\frac{K_p}{K_d}")
     nota("O PD acrescenta **um zero** em z_c. Esse zero dá o ângulo que falta para s_d entrar no lugar das raízes.")
@@ -286,11 +241,6 @@ else:
 
 # ---------- 3. especificação ----------
 st.header("3. Especificação → polo desejado s_d")
-=======
-
-# ---------- especificação ----------
-st.header("3. Especificação")
->>>>>>> a74fefccb7184df471da8dca2ae3e4eb6112ab52
 espec = st.radio("Como a questão dá o polo desejado?",
                  ["Mp (%) e tempo de acomodação", "ξ e ωn", "Polo s_d direto"],
                  horizontal=True)
@@ -300,7 +250,6 @@ if espec == "Mp (%) e tempo de acomodação":
     c1, c2, c3 = st.columns(3)
     mp_alvo = c1.number_input("Mp máximo (%)", min_value=0.01, max_value=99.0, value=10.0, step=1.0)
     ts_alvo = c2.number_input("Tempo de acomodação máximo (s)", min_value=0.001, value=4.0, step=0.5)
-<<<<<<< HEAD
     criterio = c3.selectbox("Critério do ts", [5, 2],
                             format_func=lambda x: f"{x}%  (ts = {3 if x == 5 else 4}/ξωn)")
 
@@ -327,44 +276,21 @@ if espec == "Mp (%) e tempo de acomodação":
             rf"\xi\,\omega_n \geq \frac{{{k_ts}}}{{t_s}} = \frac{{{k_ts}}}{{{ts_alvo:g}}} = {zwn:.4f}",
             rf"\omega_{{n,\min}} = \frac{{{zwn:.4f}}}{{\xi}} = \frac{{{zwn:.4f}}}{{{zeta:.4f}}} = {wn_min:.4f}\ \text{{rad/s}}")
 
-=======
-    criterio = c3.selectbox("Critério do ts", [5, 2], format_func=lambda x: f"{x}%  (ts = {3 if x == 5 else 4}/ξωn)")
-
-    zeta_exato = zeta_de_mp(mp_alvo)
-    arred = st.checkbox("Arredondar ξ para cima com 1 casa decimal (como no caderno)", value=True)
-    zeta = np.ceil(zeta_exato * 10 - 1e-9) / 10 if arred else zeta_exato
-    zwn = zeta_wn_minimo(ts_alvo, criterio)
-    wn_min = zwn / zeta
-
-    c1, c2, c3 = st.columns(3)
-    c1.metric("ξ calculado", f"{zeta_exato:.4f}")
-    c2.metric("ξ usado", f"{zeta:.4f}")
-    c3.metric("ωn mínimo", f"{wn_min:.4f} rad/s")
->>>>>>> a74fefccb7184df471da8dca2ae3e4eb6112ab52
     wn = st.number_input("ωn de projeto (rad/s). Dica: use um valor acima do mínimo para ter folga.",
                          min_value=1e-6, value=float(np.round(wn_min, 4)), step=0.1, format="%.4f")
     if wn < wn_min - 1e-9:
         st.warning("ωn abaixo do mínimo: o tempo de acomodação estimado não atende.")
-<<<<<<< HEAD
-=======
-    s_d = polo_desejado(zeta, wn)
->>>>>>> a74fefccb7184df471da8dca2ae3e4eb6112ab52
 
 elif espec == "ξ e ωn":
     c1, c2 = st.columns(2)
     zeta = c1.number_input("ξ", min_value=0.001, max_value=0.999, value=0.7, step=0.05, format="%.4f")
     wn = c2.number_input("ωn (rad/s)", min_value=1e-6, value=0.5, step=0.1, format="%.4f")
-<<<<<<< HEAD
-=======
-    s_d = polo_desejado(zeta, wn)
->>>>>>> a74fefccb7184df471da8dca2ae3e4eb6112ab52
 
 else:
     c1, c2 = st.columns(2)
     re_sd = c1.number_input("Parte real de s_d", value=-4.0, step=0.5, format="%.4f")
     im_sd = c2.number_input("Parte imaginária de s_d (positiva)", min_value=1e-6, value=4.0,
                             step=0.5, format="%.4f")
-<<<<<<< HEAD
 
 if espec == "Polo s_d direto":
     s_d = complex(re_sd, im_sd)
@@ -381,11 +307,6 @@ else:
             rf" = {s_d.real:.4f} \pm j{s_d.imag:.4f}")
 
 st.info(f"Polo desejado:  s_d = {fmt_c(s_d)}   (e o conjugado)")
-=======
-    s_d = complex(re_sd, im_sd)
-
-st.info(f"Polo desejado:  s_d = {fmt_c(s_d)}")
->>>>>>> a74fefccb7184df471da8dca2ae3e4eb6112ab52
 
 # ---------- cálculo ----------
 try:
@@ -394,7 +315,6 @@ except Exception as e:
     st.error(f"Não foi possível projetar: {e}")
     st.stop()
 
-<<<<<<< HEAD
 # ---------- 4. ângulo ----------
 st.header("4. Critério de ângulo")
 nota("Para s_d pertencer ao lugar das raízes, o ângulo de C(s_d)G(s_d)H(s_d) deve ser ±180°:")
@@ -421,19 +341,10 @@ if MOSTRAR:
                          rf"\operatorname{{arctg}}\frac{{{dim:.4f}}}{{{dre:.4f}}} = {base:.3f}^\circ{corr}"
                          rf" \;\Rightarrow\; {ang:.3f}^\circ")
 
-=======
-st.header("4. Critério de ângulo")
-st.dataframe(pd.DataFrame(tabela_angulos(s_d, r["polos"], r["zeros"])),
-             hide_index=True)
-if tipo in ('PI', 'PID'):
-    st.caption("O polo em 0 é o integrador do controlador e já está incluído.")
-
->>>>>>> a74fefccb7184df471da8dca2ae3e4eb6112ab52
 c1, c2, c3 = st.columns(3)
 c1.metric("Σ ângulos dos polos", f'{r["soma_polos"]:.3f}°')
 c2.metric("Σ ângulos dos zeros", f'{r["soma_zeros"]:.3f}°')
 c3.metric("φ = Σpolos − Σzeros", f'{r["phi"]:.3f}°')
-<<<<<<< HEAD
 formula(rf"\varphi = \sum\theta_p - \sum\theta_z = {r['soma_polos']:.3f}^\circ - {r['soma_zeros']:.3f}^\circ"
         rf" = {r['phi']:.3f}^\circ")
 
@@ -511,38 +422,6 @@ formula(r"T(s) = \frac{C\,G}{1 + C\,G\,H} = \frac{N_C\,N_G\,D_H}{D_C\,D_G\,D_H +
 nota("As raízes do denominador (equação característica) são os polos de malha fechada. "
      "O par s_d deve aparecer entre elas:")
 formula(latex_poli(den_mf) + " = 0")
-=======
-
-if tipo in ('PD', 'PI'):
-    st.markdown(f"O zero do controlador deve contribuir com **θ = φ − 180° = {r['theta']:.3f}°** "
-                f"e fica em **s = {r['z_c']:.4f}**.")
-elif tipo == 'PID':
-    st.markdown(f"Os dois zeros juntos contribuem com **φ − 180° = {r['theta_total']:.3f}°**, "
-                f"ou seja, **{r['theta']:.3f}° cada**. Zeros duplos em **s = {r['z_c']:.4f}**.")
-else:
-    st.markdown(f"O polo do controlador deve contribuir com **θ = 180° − φ = {r['theta']:.3f}°** "
-                f"e fica em **s = {r['p_c']:.4f}**.")
-
-st.header("5. Critério de módulo e resultado")
-st.markdown(f"|G(s_d)H(s_d)| {'/ |s_d| ' if tipo in ('PI', 'PID') else ''}= **{r['modulo_GH']:.6f}**")
-
-if tipo == 'PD':
-    st.latex(rf"K_d = \frac{{1}}{{|s_d - z_c|\,|GH|}} = {r['Kd']:.4f} \qquad K_p = -z_c K_d = {r['Kp']:.4f}")
-    st.latex(rf"C(s) = {r['Kp']:.4f} + {r['Kd']:.4f}\,s")
-elif tipo == 'PI':
-    st.latex(rf"K_p = \frac{{|s_d|}}{{|s_d - z_c|\,|GH|}} = {r['Kp']:.4f} \qquad K_i = -z_c K_p = {r['Ki']:.4f}")
-    st.latex(rf"C(s) = {r['Kp']:.4f} + \frac{{{r['Ki']:.4f}}}{{s}}")
-elif tipo == 'PID':
-    st.latex(rf"K_d = {r['Kd']:.4f} \qquad K_p = -2 z_c K_d = {r['Kp']:.4f} \qquad K_i = z_c^2 K_d = {r['Ki']:.4f}")
-    st.latex(rf"C(s) = {r['Kp']:.4f} + \frac{{{r['Ki']:.4f}}}{{s}} + {r['Kd']:.4f}\,s")
-else:
-    st.latex(rf"a = \frac{{|s_d + b|}}{{|GH|}} = {r['a']:.4f} \qquad b = {r['b']:.4f}")
-    st.latex(rf"G_c(s) = \frac{{{r['a']:.4f}}}{{s + {r['b']:.4f}}}")
-
-# ---------- malha fechada ----------
-st.header("6. Verificação em malha fechada")
-num_mf, den_mf = malha_fechada(r["C_num"], r["C_den"], N_G, D_G, N_H, D_H)
->>>>>>> a74fefccb7184df471da8dca2ae3e4eb6112ab52
 polos_mf = np.roots(den_mf.coeffs)
 st.markdown("**Polos de malha fechada:** " + ", ".join(fmt_c(p) for p in polos_mf))
 
@@ -552,12 +431,9 @@ if resp is None:
 else:
     t, y = resp
     m = metricas(t, y)
-<<<<<<< HEAD
     nota("Simulando a resposta ao degrau unitário, as métricas reais são medidas na curva:")
     formula(r"y(\infty) = T(0)\qquad M_p = \frac{y_{\max} - y(\infty)}{y(\infty)}\cdot 100\%"
             r"\qquad t_s = \text{último instante fora da faixa } \pm 2\% \text{ ou } \pm 5\%")
-=======
->>>>>>> a74fefccb7184df471da8dca2ae3e4eb6112ab52
     c1, c2, c3, c4 = st.columns(4)
     c1.metric("Valor final", f"{m['yf']:.4f}")
     c2.metric("Mp simulado", f"{m['Mp']:.2f}%",
@@ -587,11 +463,7 @@ else:
     st.caption("A simulação considera todos os polos e zeros de malha fechada. Se ela não atender "
                "à especificação, aumente o ωn de projeto: o método supõe que o par s_d domina.")
 
-<<<<<<< HEAD
 # ---------- 7. discretização ----------
-=======
-# ---------- discretização ----------
->>>>>>> a74fefccb7184df471da8dca2ae3e4eb6112ab52
 st.header("7. Discretização (opcional)")
 alvo = st.radio("O que discretizar?",
                 ["Nada", "Só o controlador C(s)", "G(s)·H(s)·C(s) (malha aberta completa)"],
@@ -602,8 +474,4 @@ if alvo == "Só o controlador C(s)":
 elif alvo.startswith("G(s)"):
     L_num, L_den = N_GH * r["C_num"], D_GH * r["C_den"]
     st.latex(r'G(s)H(s)C(s) = ' + latex_fracao(L_num, L_den))
-<<<<<<< HEAD
     bloco_discretizacao(L_num, L_den, "malha", rotulo='GHC', mostrar_eq=False)
-=======
-    bloco_discretizacao(L_num, L_den, "malha", rotulo='GHC', mostrar_eq=False)
->>>>>>> a74fefccb7184df471da8dca2ae3e4eb6112ab52
